@@ -1,6 +1,8 @@
 #pragma once
 #include <string>
 #include <fstream>
+#include <vector>
+#include <stack>
 
 class Chip8
 {
@@ -31,6 +33,8 @@ private:
 
 	unsigned char v[16];
 
+	unsigned char key[16];
+
 	unsigned short I;
 
 	unsigned short pc;
@@ -40,16 +44,27 @@ private:
 	unsigned char delayTimer;
 	unsigned char soundTimer;
 
-	unsigned short stack[16];
+	std::stack<short> stack;
 	unsigned short sp;
 
-	bool drawFlag;
+	
 
 public:
+
+	int ScreenMagnifierX{ 2 };
+	int ScreenMagnifierY{ 2 };
+
 	bool executing;
 
+	bool drawFlag;
+	// Input
+	char WaitForKey();
+	void SetKeys();
+
+	// Emulation
 	void InitialiseCpu();
 	void LoadGame(std::string File);
 	void EmulateCycle();
+	void OutputScreen();
 };
 
