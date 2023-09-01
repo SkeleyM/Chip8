@@ -40,11 +40,10 @@ private:
 	unsigned short pc;
 
 	unsigned char screenBuffer[64 * 32];
-
 	unsigned char delayTimer;
 	unsigned char soundTimer;
 
-	std::stack<short> stack;
+	unsigned short stack[16];
 	unsigned short sp;
 
 	

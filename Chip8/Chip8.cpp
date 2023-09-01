@@ -155,17 +155,19 @@ void Chip8::EmulateCycle()
 		// SYS address
 		case (0x0000):
 		{
-			switch (this->opcode & 0x00FF)
+			switch (this->opcode & 0x000F)
 			{
 				// CLS
-				case (0x00E0):
+				case (0x0000):
 				{
 					break;
 				}
 				// RET
-				case (0x00EE):
+				case (0x000E):
 				{
-					this->pc = this->stack.top();
+					this->pc = stack[sp];
+					stack[sp] = NULL;
+					sp--;
 					break;
 				}
 			}
@@ -180,10 +182,10 @@ void Chip8::EmulateCycle()
 		}
 		// CALL adress
 		case (0x2000):
-		{
-			
-			this->stack.push(this->pc);
+		{	
+			this->stack[this->sp] = pc;
 			this->pc = this->opcode & 0x0FFF;
+			this->sp++;
 			break;
 		}
 		// SE Vx, byte
@@ -212,7 +214,7 @@ void Chip8::EmulateCycle()
 		// skip next instruction if Vx == Vy
 		case (0x5000):
 		{
-			if ((v[this->opcode & 0x0F00]) == v[this->opcode & 0x00F0])
+			if ((v[this->opcode & 0x0F00]) == (v[this->opcode & 0x00F0]))
 			{
 				// skip next instruction
 				pc += 2;
@@ -260,7 +262,7 @@ void Chip8::EmulateCycle()
 		// SET I, nnn
 		case (0xA000):
 		{
-			this->I = this->opcode & 0x0FFF;
+			this->I = (this->opcode & 0x0FFF);
 			break;
 		}
 		// SET RND Vx, AND kk
@@ -277,25 +279,24 @@ void Chip8::EmulateCycle()
 			unsigned short y = v[(opcode & 0x00F0) >> 4];
 			unsigned short height = opcode & 0x000F;
 			unsigned short pixel;
-
+			
 			v[0xF] = 0;
-			for (int yline = 0; yline < height; yline++)
+			for (int row = 0; row < height; row++)
 			{
-				pixel = memory[I + yline];
-				for (int xline = 0; xline < 8; xline++)
+				pixel = memory[I + row];
+				for (int col = 0; col < 8; col++)
 				{
-					if ((pixel & (0x80 >> xline)) != 0)
+					if (pixel != 0)
 					{
-						if (screenBuffer[(x + xline + ((y + yline) * 64))] == 1)
+						if (screenBuffer[(x + col + ((y + row) * 64))] == 1)
 						{
 							v[0xF] = 1;
-							screenBuffer[(x + xline + ((y + yline) * 64))] ^= 1;
 						}
-						
+						screenBuffer[(x + col + ((y + row) * 64))] ^= 1;
 					}
 				}
 			}
-		
+
 			this->drawFlag = true;
 			break;
 		}
@@ -319,7 +320,58 @@ void Chip8::EmulateCycle()
 				// Wait for key press and store value of key in Vx
 				case(0x000A):
 				{
-					// Not Implimented until Input
+					char key = WaitForKey();
+					v[this->opcode & 0x0F00] = key;
+					break;
+				}
+				// LD DT, VX
+				case(0x0005):
+				{
+					this->delayTimer = v[this->opcode & 0x0F00];
+					break;
+				}
+				// LD ST, VX
+				case(0x0008):
+				{
+					this->soundTimer = v[this->opcode & 0x0F00];
+					break;
+				}
+				// ADD I, Vx
+				case(0x000E):
+				{
+					this->I += v[this->opcode & 0x0F00];
+					break;
+				}
+				// LD FONT, Vx
+				case(0x0009):
+				{
+					this->I = ((this->opcode & 0x0F00) + 5);
+					break;
+				}
+				// LD BCD, Vx
+				case(0x0003):
+				{
+					this->memory[this->I] = this->v[(this->opcode & 0x0F00) >> 8] / 100;
+					this->memory[this->I + 1] = (this->v[(this->opcode & 0x0F00) >> 8] / 10) % 10;
+					this->memory[this->I + 2] = (this->v[(this->opcode & 0x0F00) >> 8] % 100) % 10;
+					break;
+				}
+				// LD [i], Vx
+				case(0x0055):
+				{
+					for (int index = 0; index < 16; index++)
+					{
+						this->memory[this->I + index] = this->v[index];
+					}
+					break;
+				}
+				// LD Vx, [i]
+				case(0x0065):
+				{
+					for (int index = 0; index < 16; index++)
+					{
+						this->v[index] = this->memory[this->I + index];
+					}
 					break;
 				}
 			}
@@ -353,16 +405,7 @@ void Chip8::OutputScreen()
 	{
 		for (int x = 0; x < 64; x++)
 		{
-			if (screenBuffer[y * x] == 1)
-			{
-				SetConsoleTextAttribute(hConsole, 0x00FF);
-				std::cout << screenBuffer[y * x];
-			}
-			if (screenBuffer[y * x] == 0)
-			{
-				SetConsoleTextAttribute(hConsole, 0x0000);
-				std::cout << screenBuffer[y * x];
-			}
+			std::cout << screenBuffer[x];
 		}
 		std::cout << std::endl;
 	}
