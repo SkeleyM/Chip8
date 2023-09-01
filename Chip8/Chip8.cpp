@@ -1,7 +1,16 @@
 #include "Chip8.h"
 #include <vector>
+#include <string>
 #include <iostream>
 #include <Windows.h>
+
+void Chip8::DebugLog(std::string str)
+{
+	if (this->Debugging)
+	{
+		std::cout << str << std::endl;
+	}
+}
 
 char Chip8::WaitForKey()
 {
@@ -103,10 +112,11 @@ void Chip8::SetKeys()
 void Chip8::InitialiseCpu()
 {
 	// set program counter to 0x200 as thats where programs start in memory
-	this->pc = 0x200;
+	this->pc = 0x200 + 1;
 	this->opcode = 0x0000;
 	this->I = 0x0000;
 	this->sp = 0x0000;
+	this->drawFlag = false;
 	this->executing = true;
 
 	for (int i = 0; i < 80; i++)
@@ -222,7 +232,7 @@ void Chip8::EmulateCycle()
 			break;
 		}
 		// LD vx, byte
-		// Set Vx = kk, (0x6xkkg)
+		// Set Vx = kk, (0x6xkk)
 		case (0x6000):
 		{
 			this->v[this->opcode & 0x0F00] = this->opcode & 0x00FF;
@@ -269,7 +279,7 @@ void Chip8::EmulateCycle()
 		case (0xC000):
 		{
 			srand(time(0));
-			v[this->opcode & 0x0F00] = ((rand() + 1) % 255) & this->opcode & 0x00FF;
+			v[this->opcode & 0x0F00] = ((rand() + 1) % 255) & (this->opcode & 0x00FF);
 			break;
 		}
 		// Display n-byte sprite starting at memory location I at (Vx, Vy), set VF = collision.

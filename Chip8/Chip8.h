@@ -46,9 +46,12 @@ private:
 	unsigned short stack[16];
 	unsigned short sp;
 
-	
+	void DebugLog(std::string str);
 
 public:
+
+	bool Debugging{ false };
+	bool StepExecute{ false };
 
 	int ScreenMagnifierX{ 2 };
 	int ScreenMagnifierY{ 2 };
