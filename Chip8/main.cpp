@@ -5,7 +5,7 @@ int main()
 {
 
 	Chip8 chip8;
-	chip8.LoadGame("C:/Users/mason/Desktop/opcodetest.ch8");
+	chip8.LoadGame("C:/Users/mason/Desktop/rngtest.ch8");
 
 	chip8.StepExecute = true;
 

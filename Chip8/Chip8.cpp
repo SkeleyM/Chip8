@@ -153,7 +153,7 @@ void Chip8::LoadGame(std::string File)
 	int index = 0;
 	while (file >> byte && !file.eof())
 	{
-		this->memory[index + 0x200] = byte;
+		this->memory[index + 512] = byte;
 		index++;
 	}
 
@@ -174,11 +174,17 @@ void Chip8::EmulateCycle()
 	printf("%X", opcode);
 	std::cout << std::endl;
 
-	pc += 2;
+	int nnn = (this->opcode & 0x0FFF);
+	int n = (this->opcode & 0x000F);
+	int x = ((this->opcode & 0x0F00) >> 8);
+	int y = ((this->opcode & 0x00F0) >> 4);
+	int kk = (this->opcode & 0x00FF);
 
 	// Decode & Execute
 	switch (this->opcode & 0xF000)
 	{
+
+
 
 		// SYS address
 		case (0x0000):
@@ -204,15 +210,14 @@ void Chip8::EmulateCycle()
 		// JMP adress
 		case (0x1000):
 		{
-			this->pc = this->opcode & 0x0FFF;
-			std::cout << "JMP " << (this->opcode & 0x0FFF) << std::endl;
+			this->pc = nnn;
 			break;
 		}
 		// CALL adress
 		case (0x2000):
 		{	
 			this->stack[this->sp] = pc;
-			this->pc = this->opcode & 0x0FFF;
+			this->pc = nnn;
 			this->sp++;
 			break;
 		}
@@ -220,7 +225,7 @@ void Chip8::EmulateCycle()
 		// skip next instruction if Vx == kk
 		case (0x3000):
 		{
-			if ((v[this->opcode & 0x0F00]) == (this->opcode & 0x00FF))
+			if ((v[x]) == (kk))
 			{
 				// skip next instruction
 				pc += 2;
@@ -231,7 +236,7 @@ void Chip8::EmulateCycle()
 		// skip next instruction if Vx != kk
 		case (0x4000):
 		{
-			if ((v[this->opcode & 0x0F00]) != (this->opcode & 0x00FF))
+			if ((v[x]) != (kk))
 			{
 				// skip next instruction
 				pc += 2;
@@ -242,7 +247,7 @@ void Chip8::EmulateCycle()
 		// skip next instruction if Vx == Vy
 		case (0x5000):
 		{
-			if ((v[this->opcode & 0x0F00]) == (v[this->opcode & 0x00F0]))
+			if ((v[x]) == (v[y]))
 			{
 				// skip next instruction
 				pc += 2;
@@ -253,13 +258,13 @@ void Chip8::EmulateCycle()
 		// Set Vx = kk, (0x6xkk)
 		case (0x6000):
 		{
-			this->v[(this->opcode & 0x0F00)] = (this->opcode & 0x00FF);
+			this->v[x] = (kk);
 			break;
 		}
 		// ADD Vx, byte
 		case (0x7000):
 		{
-			v[this->opcode & 0x0F00] += this->opcode & 0x00FF;
+			v[x] += kk;
 			break;
 		}
 		// ADD Vy, byte
@@ -270,18 +275,17 @@ void Chip8::EmulateCycle()
 				// SET Vx, Vx | Vy
 				case (0x0001):
 				{
-					char Vx = this->opcode & 0x0F00;
-					char Vy = this->opcode & 0x00F0;
+					char Vx = x;
+					char Vy = y;
 					v[Vx] = Vx | Vy;
 					break;
 				}
 			}
-			v[this->opcode & 0x0F00] += this->opcode & 0x00FF;
 			break;
 		}
 		case (0x9000):
 		{
-			if (v[this->opcode & 0x0F00] != v[this->opcode & 0x00F0])
+			if (v[x] != v[y])
 			{
 				this->pc += 2;
 			}
@@ -290,14 +294,14 @@ void Chip8::EmulateCycle()
 		// SET I, nnn
 		case (0xA000):
 		{
-			this->I = (this->opcode & 0x0FFF);
+			this->I = (nnn);
 			break;
 		}
 		// SET RND Vx, AND kk
 		case (0xC000):
 		{
 			srand(time(0));
-			v[this->opcode & 0x0F00] = ((rand() + 1) % 255) & (this->opcode & 0x00FF);
+			v[x] = std::abs((((rand()) % 255) + 1) & (kk));
 			break;
 		}
 		// Display n-byte sprite starting at memory location I at (Vx, Vy), set VF = collision.
@@ -334,12 +338,12 @@ void Chip8::EmulateCycle()
 			{
 				case (0x000E):
 				{
-					if (key[this->opcode & 0x0F00]) { this->pc += 2; }
+					if (key[x]) { this->pc += 2; }
 					break;
 				}
 				case (0x0001):
 				{
-					if (key[this->opcode & 0x0F00]) { this->pc += 2; }
+					if (!key[x]) { this->pc += 2; }
 					break;
 				}
 			}
@@ -359,46 +363,46 @@ void Chip8::EmulateCycle()
 				// LOD Vx, DT
 				case(0x0007):
 				{
-					v[this->opcode & 0x0F00] = this->delayTimer;
+					v[x] = this->delayTimer;
 					break;
 				}
 				// Wait for key press and store value of key in Vx
 				case(0x000A):
 				{
 					char key = WaitForKey();
-					v[this->opcode & 0x0F00] = key;
+					v[x] = key;
 					break;
 				}
 				// LD DT, VX
 				case(0x0015):
 				{
-					this->delayTimer = v[this->opcode & 0x0F00];
+					this->delayTimer = v[x];
 					break;
 				}
 				// LD ST, VX
 				case(0x0018):
 				{
-					this->soundTimer = v[this->opcode & 0x0F00];
+					this->soundTimer = v[x];
 					break;
 				}
 				// ADD I, Vx
 				case(0x001E):
 				{
-					this->I += v[this->opcode & 0x0F00];
+					this->I += v[x];
 					break;
 				}
 				// LD FONT, Vx
 				case(0x0029):
 				{
-					this->I = this->v[((this->opcode & 0x0F00) * 5)];
+					this->I = this->v[x] * 5;
 					break;
 				}
 				// LD BCD, Vx
 				case(0x0033):
 				{
-					this->memory[this->I] = this->v[(this->opcode & 0x0F00) >> 8] / 100;
-					this->memory[this->I + 1] = (this->v[(this->opcode & 0x0F00) >> 8] / 10) % 10;
-					this->memory[this->I + 2] = (this->v[(this->opcode & 0x0F00) >> 8] % 100) % 10;
+					this->memory[this->I] = this->v[(x)] / 100;
+					this->memory[this->I + 1] = (this->v[(x)] / 10) % 10;
+					this->memory[this->I + 2] = (this->v[(x)] % 100) % 10;
 					break;
 				}
 				// LD [i], Vx
@@ -437,9 +441,8 @@ void Chip8::EmulateCycle()
 			this->executing = false;
 			break;
 		}
-
 	}
-	
+	pc += 2;
 }
 
 void Chip8::OutputScreen()
