@@ -4,6 +4,21 @@
 #include <iostream>
 #include <Windows.h>
 
+void Chip8::DebugLog()
+{
+	int index = 0;
+	for (char value : v)
+	{
+		std::cout << " V" << index << ": " << (int)value;
+		index++;
+	}
+	std::cout << " I:";
+	printf("%X", this->I);
+		
+	std::cout << std::endl;
+
+}
+
 void Chip8::DebugLog(std::string str)
 {
 	if (this->Debugging)
@@ -112,7 +127,7 @@ void Chip8::SetKeys()
 void Chip8::InitialiseCpu()
 {
 	// set program counter to 0x200 as thats where programs start in memory
-	this->pc = 0x200 + 1;
+	this->pc = 0x200;
 	this->opcode = 0x0000;
 	this->I = 0x0000;
 	this->sp = 0x0000;
@@ -128,7 +143,7 @@ void Chip8::InitialiseCpu()
 void Chip8::LoadGame(std::string File)
 {
 	// open File in binary mode
-	std::ifstream file(File, std::ios::binary);
+	std::ifstream file(File, std::ios::in);
 
 	// Return and provide message if the file fails to open
 	if (!file.is_open()) { std::cout << "Failed To Open ROM!"; return; }
@@ -155,8 +170,11 @@ void Chip8::EmulateCycle()
 	// bitwise OR the current and next byte in memory to merge and form an instruction
 	this->opcode = memory[pc] << 8 | memory[pc + 1];
 
+	std::cout << "PC: ";
 	printf("%X", opcode);
 	std::cout << std::endl;
+
+	pc += 2;
 
 	// Decode & Execute
 	switch (this->opcode & 0xF000)
@@ -235,7 +253,7 @@ void Chip8::EmulateCycle()
 		// Set Vx = kk, (0x6xkk)
 		case (0x6000):
 		{
-			this->v[this->opcode & 0x0F00] = this->opcode & 0x00FF;
+			this->v[(this->opcode & 0x0F00)] = (this->opcode & 0x00FF);
 			break;
 		}
 		// ADD Vx, byte
@@ -287,27 +305,44 @@ void Chip8::EmulateCycle()
 		{
 			unsigned short x = v[(opcode & 0x0F00) >> 8];
 			unsigned short y = v[(opcode & 0x00F0) >> 4];
-			unsigned short height = opcode & 0x000F;
+			unsigned short height = (opcode & 0x000F);
 			unsigned short pixel;
 			
 			v[0xF] = 0;
-			for (int row = 0; row < height; row++)
+			for (int col = 0; col < height; col++)
 			{
-				pixel = memory[I + row];
-				for (int col = 0; col < 8; col++)
+				pixel = memory[I + col];
+				for (int row = 0; row < 8; row++)
 				{
-					if (pixel != 0)
+					if ((pixel & (0x80 >> row)) != 0)
 					{
-						if (screenBuffer[(x + col + ((y + row) * 64))] == 1)
+						if (screenBuffer[x + row + ((y + col) * 64)] == 1)
 						{
 							v[0xF] = 1;
 						}
-						screenBuffer[(x + col + ((y + row) * 64))] ^= 1;
+						screenBuffer[x + row + ((y + col) * 64)] ^= 1;
 					}
 				}
 			}
 
 			this->drawFlag = true;
+			break;
+		}
+		case (0xE000):
+		{
+			switch (this->opcode * 0x000F)
+			{
+				case (0x000E):
+				{
+					if (key[this->opcode & 0x0F00]) { this->pc += 2; }
+					break;
+				}
+				case (0x0001):
+				{
+					if (key[this->opcode & 0x0F00]) { this->pc += 2; }
+					break;
+				}
+			}
 			break;
 		}
 		case (0xF000):
@@ -335,31 +370,31 @@ void Chip8::EmulateCycle()
 					break;
 				}
 				// LD DT, VX
-				case(0x0005):
+				case(0x0015):
 				{
 					this->delayTimer = v[this->opcode & 0x0F00];
 					break;
 				}
 				// LD ST, VX
-				case(0x0008):
+				case(0x0018):
 				{
 					this->soundTimer = v[this->opcode & 0x0F00];
 					break;
 				}
 				// ADD I, Vx
-				case(0x000E):
+				case(0x001E):
 				{
 					this->I += v[this->opcode & 0x0F00];
 					break;
 				}
 				// LD FONT, Vx
-				case(0x0009):
+				case(0x0029):
 				{
-					this->I = ((this->opcode & 0x0F00) + 5);
+					this->I = this->v[((this->opcode & 0x0F00) * 5)];
 					break;
 				}
 				// LD BCD, Vx
-				case(0x0003):
+				case(0x0033):
 				{
 					this->memory[this->I] = this->v[(this->opcode & 0x0F00) >> 8] / 100;
 					this->memory[this->I + 1] = (this->v[(this->opcode & 0x0F00) >> 8] / 10) % 10;
@@ -404,7 +439,7 @@ void Chip8::EmulateCycle()
 		}
 
 	}
-	pc += 2;
+	
 }
 
 void Chip8::OutputScreen()
@@ -415,7 +450,19 @@ void Chip8::OutputScreen()
 	{
 		for (int x = 0; x < 64; x++)
 		{
-			std::cout << screenBuffer[x];
+			// screen buffer is made of 1's and 0's so cast to bool for ease of use
+			bool value = (int)screenBuffer[x + (y * 64)];
+			if (value)
+			{
+				SetConsoleTextAttribute(hConsole, 0x00FF);
+				std::cout << value;
+			}
+			else
+			{
+				SetConsoleTextAttribute(hConsole, 0x0000);
+				std::cout << value;
+			}
+			
 		}
 		std::cout << std::endl;
 	}

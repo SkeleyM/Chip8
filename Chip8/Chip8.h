@@ -10,7 +10,7 @@ private:
 
 	unsigned short opcode;
 
-	unsigned char memory[4096];
+	unsigned char memory[4096]{ 0x0000 };
 	unsigned char chipFontset[80] =
 	{
 	  0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
@@ -31,24 +31,26 @@ private:
 	  0xF0, 0x80, 0xF0, 0x80, 0x80  // F
 	};
 
-	unsigned char v[16];
+	unsigned char v[16]{ 0x0000 };
 
-	unsigned char key[16];
+	unsigned char key[16]{ 0x0000 };
 
 	unsigned short I;
 
 	unsigned short pc;
 
-	unsigned char screenBuffer[64 * 32];
+	unsigned char screenBuffer[64 * 32]{ 0x0000 };
 	unsigned char delayTimer;
 	unsigned char soundTimer;
 
-	unsigned short stack[16];
+	unsigned short stack[16]{ 0x0000 };
 	unsigned short sp;
 
+	
 	void DebugLog(std::string str);
 
 public:
+	void DebugLog();
 
 	bool Debugging{ false };
 	bool StepExecute{ false };
