@@ -8,7 +8,7 @@ class Chip8
 {
 private:
 
-	unsigned short opcode;
+	unsigned short opcode{ 0x0000};
 
 	unsigned char memory[4096]{ 0x0000 };
 	unsigned char chipFontset[80] =

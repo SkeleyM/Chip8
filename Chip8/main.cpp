@@ -1,4 +1,5 @@
 #include <iostream>
+#include <Windows.h>
 #include "Chip8.h"
 
 int main()
@@ -7,7 +8,6 @@ int main()
 	Chip8 chip8;
 	chip8.LoadGame("C:/Users/mason/Desktop/rngtest.ch8");
 
-	chip8.StepExecute = true;
 
 	chip8.InitialiseCpu();
 	while (chip8.executing)
@@ -20,7 +20,7 @@ int main()
 		{
 			chip8.OutputScreen();
 		}	
-		chip8.DebugLog();
+		Sleep(2);
 	}
 	
 
