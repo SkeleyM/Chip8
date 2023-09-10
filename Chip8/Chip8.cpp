@@ -430,6 +430,12 @@ void Chip8::EmulateCycle()
 		pc += 2;
 		break;
 	}
+	// JP v0, addr
+	// jump to nnn + v[0]
+	case (0xB000)
+	{
+		this->pc = (nnn + v[0]);
+	}
 	// SET RND Vx, AND kk
 	case (0xC000):
 	{
