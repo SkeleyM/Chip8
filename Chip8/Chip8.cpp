@@ -396,6 +396,12 @@ void Chip8::EmulateCycle()
 				(v[x] & 0b001) ? v[0xF] = 1 : v[0xF] = 0;
 				v[x] /= 2;
 			}
+			// SUBN Vx, Vy
+			case (0x0007):
+			{
+				(v[y] > v[x]) ? v[0xF] = 1 : v[0xF] = 0;
+				v[x] = v[y] - v[x];
+			}
 		}
 			break;
 	}
