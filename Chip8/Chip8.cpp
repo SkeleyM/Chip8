@@ -389,24 +389,36 @@ void Chip8::EmulateCycle()
 			{
 				(v[x] > v[y]) ? v[0xF] = 1 : v[0xF] = 0;
 				v[x] -= v[y];
+
+				this->pc += 2;
+				break;
 			}
 			// SHR Vx {, Vy}
 			case (0x0006):
 			{
 				(v[x] & 0b001) ? v[0xF] = 1 : v[0xF] = 0;
 				v[x] /= 2;
+
+				this->pc += 2;
+				break;
 			}
 			// SUBN Vx, Vy
 			case (0x0007):
 			{
 				(v[y] > v[x]) ? v[0xF] = 1 : v[0xF] = 0;
 				v[x] = v[y] - v[x];
+
+				this->pc += 2;
+				break;
 			}
 			// SHL Vx {, Vy}
 			case (0x000E):
 			{
 				(v[x] & 0b0001) ? v[0xF] = 1 : v[0xF] = 0;
 				v[x] *= 2;
+
+				this->pc += 2;
+				break;
 			}
 		}
 			break;
@@ -432,9 +444,10 @@ void Chip8::EmulateCycle()
 	}
 	// JP v0, addr
 	// jump to nnn + v[0]
-	case (0xB000)
+	case (0xB000):
 	{
 		this->pc = (nnn + v[0]);
+		break;
 	}
 	// SET RND Vx, AND kk
 	case (0xC000):
