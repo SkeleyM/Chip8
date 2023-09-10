@@ -197,7 +197,7 @@ void Chip8::InitialiseCpu()
 void Chip8::LoadGame(std::string File)
 {
 	// open File in binary mode
-	std::ifstream file(File, std::ios::in);
+	std::ifstream file(File, std::ios::binary);
 
 	// Return and provide message if the file fails to open
 	if (!file.is_open()) { std::cout << "Failed To Open ROM!"; this->executing = false; return; }
@@ -208,8 +208,6 @@ void Chip8::LoadGame(std::string File)
 	{
 		this->memory[i] = byte;
 	}
-
-	file.close();
 }
 
 // emulate a cpu cycle using the Fetch Decode Execute cycle
