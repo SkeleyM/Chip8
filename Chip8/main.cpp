@@ -4,14 +4,14 @@
 
 int main(int argc, char** argv)
 {
-	//if (argc == 1) { std::cout << "Provide A ROM Path!"; return 0; }
+	if (argc == 1) { std::cout << "Provide A ROM Path!"; return 0; }
 
 	Chip8 chip8;
-	//chip8.LoadGame(argv[1]);
-	chip8.LoadGame("C:/Users/mason/Desktop/opcode.ch8");
+	chip8.LoadGame(argv[1]);
+	//chip8.LoadGame("C:/Users/mason/Desktop/opcode.ch8");
 
 
-	chip8.Debugging = true;
+	//chip8.Debugging = true;
 
 	chip8.InitialiseCpu();
 	while (chip8.executing)
@@ -30,8 +30,8 @@ int main(int argc, char** argv)
 			chip8.OutputScreen();
 		}	
 		
-		chip8.DebugLog();
-		chip8.OutputKeyStates();
+		//chip8.DebugLog();
+		//chip8.OutputKeyStates();
 	}
 	
 
