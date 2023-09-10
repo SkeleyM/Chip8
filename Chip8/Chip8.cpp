@@ -402,6 +402,12 @@ void Chip8::EmulateCycle()
 				(v[y] > v[x]) ? v[0xF] = 1 : v[0xF] = 0;
 				v[x] = v[y] - v[x];
 			}
+			// SHL Vx {, Vy}
+			case (0x000E):
+			{
+				(v[x] & 0b0001) ? v[0xF] = 1 : v[0xF] = 0;
+				v[x] *= 2;
+			}
 		}
 			break;
 	}
