@@ -8,7 +8,7 @@ class Chip8
 {
 private:
 
-	unsigned short opcode{ 0x0000};
+	unsigned short opcode{ 0x0000 };
 
 	unsigned char memory[4096]{ 0x0000 };
 	unsigned char chipFontset[80] =
@@ -33,24 +33,29 @@ private:
 
 	unsigned char v[16]{ 0x0000 };
 
-	unsigned char key[16]{ 0x0000 };
+	unsigned char key[16]{ false };
 
-	unsigned short I;
+	unsigned short I{ 0x0000 };
 
-	unsigned short pc;
+	unsigned short pc{ 0x200 };
 
 	unsigned char screenBuffer[64 * 32]{ 0x0000 };
 	unsigned char delayTimer;
+	unsigned int delayTickTimer;
 	unsigned char soundTimer;
 
-	unsigned short stack[16]{ 0x0000 };
-	unsigned short sp;
+	unsigned short stack[16]{ 0x0200 };
+	unsigned short sp{ 0 };
+
+	float deltaTime{ 0 };
 
 	
-	void DebugLog(std::string str);
 
 public:
+	// Debug
+	void DebugLog(std::string str);
 	void DebugLog();
+	void OutputKeyStates();
 
 	bool Debugging{ false };
 	bool StepExecute{ false };
@@ -58,7 +63,7 @@ public:
 	int ScreenMagnifierX{ 2 };
 	int ScreenMagnifierY{ 2 };
 
-	bool executing;
+	bool executing{ true };
 
 	bool drawFlag;
 	// Input
