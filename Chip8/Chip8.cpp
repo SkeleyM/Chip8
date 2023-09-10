@@ -393,7 +393,8 @@ void Chip8::EmulateCycle()
 			// SHR Vx {, Vy}
 			case (0x0006):
 			{
-				// binary operations yayyy
+				(v[x] & 0b001) ? v[0xF] = 1 : v[0xF] = 0;
+				v[x] /= 2;
 			}
 		}
 			break;
