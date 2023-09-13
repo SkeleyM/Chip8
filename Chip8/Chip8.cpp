@@ -42,140 +42,32 @@ void Chip8::OutputKeyStates()
 
 char Chip8::WaitForKey()
 {
-	std::vector<char> validKeys{ '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'a', 'b', 'c', 'd', 'e', 'f' };
-
-	char key;
-	while (true)
+	while (1)
 	{
-		bool breakLoop{ false };
+		byte buffer[256];
+		if (!GetKeyboardState(buffer)) { continue; };
 
-		std::cin >> key;
-
-		for (int i = 0; i < validKeys.size(); i++)
+		for (char key : this->KeyMap)
 		{
-			if (key == validKeys[i])
-			{
-				breakLoop = true;
-				break;
-			}
-		}
-		if (breakLoop) { break; }
+			byte keyState = buffer[VkKeyScanA(key)];
+			std::cout << keyState;
+			if (keyState) { return keyState; };
+		}	
 	}
-
-	switch (key)
-	{
-	case '1':
-	{
-		return 0x1;
-	}
-	case '2':
-	{
-		return 0x2;
-	}
-	case '3':
-	{
-		return 0x3;
-	}
-	case '4':
-	{
-		return 0x4;
-	}
-	case '5':
-	{
-		return 0x5;
-	}
-	case '6':
-	{
-		return 0x6;
-	}
-	case '7':
-	{
-		return 0x7;
-	}
-	case '8':
-	{
-		return 0x8;
-	}
-	case '9':
-	{
-		return 0x9;
-	}
-	case '0':
-	{
-		return 0x0;
-	}
-	case 'a':
-	{
-		return 0xa;
-	}
-	case 'b':
-	{
-		return 0xb;
-	}
-	case 'c':
-	{
-		return 0xc;
-	}
-	case 'd':
-	{
-		return 0xd;
-	}
-	case 'e':
-	{
-		return 0xe;
-	}
-	case 'f':
-	{
-		return 0xF;
-	}
-	}
-
 }
 
 void Chip8::SetKeys()
 {
 	// For Reference i do not care this is bad i cant figure out GetKeyboardState()
 
-	// 1 2 3 C
-	if (GetKeyState(0x31) < 0) { this->key[1] = true; }
-	else { this->key[1] = false; }
-	if (GetKeyState(0x32) < 0) { this->key[2] = true; }
-	else { this->key[2] = false; }
-	if (GetKeyState(0x33) < 0) { this->key[3] = true; }
-	else { this->key[3] = false; }
-	if (GetKeyState(0x34) < 0) { this->key[0xC] = true; }
-	else { this->key[0xC] = false; }
-
-
-	// 4 5 6 D
-	if (GetKeyState(0x51) < 0) { this->key[4] = true; }
-	else { this->key[4] = false; }
-	if (GetKeyState(0x57) < 0) { this->key[5] = true; }
-	else { this->key[5] = false; }
-	if (GetKeyState(0x45) < 0) { this->key[6] = true; }
-	else { this->key[6] = false; }
-	if (GetKeyState(0x52) < 0) { this->key[0xD] = true; }
-	else { this->key[0xD] = false; }
-
-	// 7 8 9 E
-	if (GetKeyState(0x41) < 0) { this->key[7] = true; }
-	else { this->key[7] = false; }
-	if (GetKeyState(0x53) < 0) { this->key[8] = true; }
-	else { this->key[8] = false; }
-	if (GetKeyState(0x44) < 0) { this->key[9] = true; }
-	else { this->key[9] = false; }
-	if (GetKeyState(0x46) < 0) { this->key[0xE] = true; }
-	else { this->key[0xE] = false; }
-
-	// A 0 B F
-	if (GetKeyState(0x5A) < 0) { this->key[0xA] = true; }
-	else { this->key[0xA] = false; }
-	if (GetKeyState(0x58) < 0) { this->key[0] = true; }
-	else { this->key[0] = false; }
-	if (GetKeyState(0x43) < 0) { this->key[0xB] = true; }
-	else { this->key[0xB] = false; }
-	if (GetKeyState(0x56) < 0) { this->key[0xF] = true; }
-	else { this->key[0xF] = false; }
+	for (int i=0; i < 16; i++)
+	{
+		short KeyVK = VkKeyScanA(this->KeyMap[i]);
+		if (GetKeyState(KeyVK) < 0) { this->KeyMap[i] = true; }
+		else { this->KeyMap[i] = false; }
+	}
+	
+	
 }
 
 void Chip8::InitialiseCpu()

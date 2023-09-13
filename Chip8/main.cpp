@@ -13,26 +13,25 @@ int main(int argc, char** argv)
 
 	//chip8.Debugging = true;
 
-	chip8.InitialiseCpu();
-	while (chip8.executing)
-	{ 
-		chip8.SetKeys();
+		chip8.InitialiseCpu();
+		while (chip8.executing)
+		{ 
+			chip8.SetKeys();
 
-		if (GetKeyState(VK_LEFT) < 0) { chip8.StepExecute = true; }
-		else { chip8.StepExecute = false;  }
-		if (chip8.StepExecute) { std::cin.get(); }
+			if (GetKeyState(VK_LEFT) < 0) { chip8.StepExecute = true; }
+			else { chip8.StepExecute = false;  }
+			if (chip8.StepExecute) { std::cin.get(); }
 
-		chip8.EmulateCycle();
-
+			chip8.EmulateCycle();
 		
-		if (chip8.drawFlag)
-		{
-			chip8.OutputScreen();
-		}	
+			if (chip8.drawFlag)
+			{
+				chip8.OutputScreen();
+			}	
 		
-		//chip8.DebugLog();
-		//chip8.OutputKeyStates();
-	}
+			//chip8.DebugLog();
+			//chip8.OutputKeyStates();
+		}
 	
 
 	return 0;
