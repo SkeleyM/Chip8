@@ -44,14 +44,13 @@ char Chip8::WaitForKey()
 {
 	while (1)
 	{
-		byte buffer[256];
-		if (!GetKeyboardState(buffer)) { continue; };
-
 		for (char key : this->KeyMap)
 		{
-			byte keyState = buffer[VkKeyScanA(key)];
-			std::cout << keyState;
-			if (keyState) { return keyState; };
+			byte KeyState = GetKeyState(VkKeyScan(key));
+			if (KeyState < 0) 
+			{
+				return key;
+			}
 		}	
 	}
 }
