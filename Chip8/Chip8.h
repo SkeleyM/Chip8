@@ -49,7 +49,7 @@ private:
 
 	float deltaTime{ 0 };
 
-	unsigned char KeyMap[16]{
+	char KeyMap[16]{
 		'1', '2', '3', 'c',
 		'4', '5', '6', 'd',
 		'7', '8', '9', 'e',

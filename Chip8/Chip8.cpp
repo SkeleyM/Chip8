@@ -46,7 +46,7 @@ char Chip8::WaitForKey()
 	{
 		for (char key : this->KeyMap)
 		{
-			byte KeyState = GetKeyState(VkKeyScan(key));
+			short KeyState = GetKeyState(VkKeyScanA(key));
 			if (KeyState < 0) 
 			{
 				return key;
