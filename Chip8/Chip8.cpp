@@ -61,7 +61,7 @@ void Chip8::SetKeys()
 
 	for (int i=0; i < 16; i++)
 	{
-		short KeyVK = VkKeyScanA(this->KeyMap[i]);
+		int KeyVK = VkKeyScanA(this->KeyMap[i]);
 		if (GetKeyState(KeyVK) < 0) { this->key[i] = true; }
 		else { this->key[i] = false; }
 	}
