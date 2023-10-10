@@ -57,13 +57,13 @@ char Chip8::WaitForKey()
 
 void Chip8::SetKeys()
 {
-	// For Reference i do not care this is bad i cant figure out GetKeyboardState()
+	// i do not care this is bad
 
 	for (int i=0; i < 16; i++)
 	{
 		short KeyVK = VkKeyScanA(this->KeyMap[i]);
-		if (GetKeyState(KeyVK) < 0) { this->KeyMap[i] = true; }
-		else { this->KeyMap[i] = false; }
+		if (GetKeyState(KeyVK) < 0) { this->key[i] = true; }
+		else { this->key[i] = false; }
 	}
 	
 	
@@ -380,21 +380,20 @@ void Chip8::EmulateCycle()
 	}
 	case (0xE000):
 	{
-		switch (this->opcode * 0x000F)
+		switch (this->opcode & 0x000F)
 		{
-		case (0x000E):
-		{
-			if (key[x]) { this->pc += 4; }
-			else { this->pc += 2; }
-			break;
-		}
-		case (0x0001):
-		{
-			std::cout << key[x];
-			if (!key[x]) { this->pc += 4; }
-			else { this->pc += 2; }
-			break;
-		}
+			case (0x000E):
+			{
+				if (key[x]) { this->pc += 4; }
+				else { this->pc += 2; }
+				break;
+			}
+			case (0x0001):
+			{
+				if (!key[x]) { this->pc += 4; }
+				else { this->pc += 2; }
+				break;
+			}
 		}
 		break;
 	}
