@@ -511,10 +511,8 @@ void Chip8::EmulateCycle()
 }
 
 void Chip8::OutputScreen()
-{
-	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-	
-	std::stringstream OutputBlock;
+{	
+	std::stringstream Output;
 	for (int y = 0; y < 32; y++)
 	{
 		for (int x = 0; x < 64; x++)
@@ -522,18 +520,17 @@ void Chip8::OutputScreen()
 			bool pixel = (int)this->screenBuffer[x + (y * 64)];
 			if (pixel) 
 			{
-				std::cout << (char)219;
+				Output << (char)219;
 			}
 			else
 			{
-				std::cout << " ";
+				Output << " ";
 			}
 		}
-		std::cout << std::endl;
+		Output << std::endl;
 	}
 
-	std::cout << std::flush;
+	std::cout << Output.str();
 
-	SetConsoleTextAttribute(hConsole, 0x000F);
 	this->drawFlag = false;
 }
