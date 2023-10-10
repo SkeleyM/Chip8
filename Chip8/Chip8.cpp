@@ -1,4 +1,4 @@
-#include "Chip8.h"
+﻿#include "Chip8.h"
 #include <vector>
 #include <string>
 #include <sstream>	
@@ -520,22 +520,15 @@ void Chip8::OutputScreen()
 		for (int x = 0; x < 64; x++)
 		{
 			bool pixel = (int)this->screenBuffer[x + (y * 64)];
-			OutputBlock << pixel;
-
-			// determine weather to output block or not
-			if ((bool)pixel != this->screenBuffer[x + (y * 64)] + 1)
+			if (pixel) 
 			{
-				if (pixel) { SetConsoleTextAttribute(hConsole, 0xFF); }
-				else { SetConsoleTextAttribute(hConsole, 0x00); }
-
-				std::cout << OutputBlock.str();
-				OutputBlock.str("");
+				std::cout << (char)219;
+			}
+			else
+			{
+				std::cout << " ";
 			}
 		}
-
-		std::cout << OutputBlock.str();
-		OutputBlock.str("");
-
 		std::cout << std::endl;
 	}
 
