@@ -4,6 +4,7 @@
 #include <sstream>	
 #include <iostream>
 #include <Windows.h>
+#include <chrono>
 
 void Chip8::DebugLog()
 {
@@ -111,7 +112,7 @@ void Chip8::EmulateCycle()
 	// bitwise OR the current and next byte in memory to merge and form an instruction
 	this->opcode = ((memory[pc] << 8) | memory[pc + 1]);
 
-	int dtStart = time(0);
+	time_t dtStart = std::chrono::system_clock::now().time_since_epoch().count();
 
 	if (this->Debugging)
 	{
@@ -500,12 +501,17 @@ void Chip8::EmulateCycle()
 		}
 	}
 
-	this->deltaTime = time(0) - dtStart;
+	// take away the current epoch in ms from the start
+	this->deltaTime = std::chrono::system_clock::now().time_since_epoch().count() - dtStart;
 
+	// add deltatime to the tick timer
 	this->delayTickTimer += deltaTime;
+	// if its == 16.67 (60HZ) then decrement timers
 	if (this->delayTickTimer >= 16.67)
 	{
-		delayTimer != 0 ? delayTimer -= 1 : NULL;
+		this->delayTimer != 0 ? this->delayTimer -= 1 : NULL;
+		this->soundTimer != 0 ? this->soundTimer -= 1  : NULL;
+		this->delayTickTimer = 0;
 	}
 }
 
@@ -516,14 +522,17 @@ void Chip8::OutputScreen()
 	{
 		for (int x = 0; x < 64; x++)
 		{
-			bool pixel = (int)this->screenBuffer[x + (y * 64)];
-			if (pixel) 
+			for (int xMult = 0; xMult < this->ScreenMagnifierX; xMult++)
 			{
-				Output << (char)219;
-			}
-			else
-			{
-				Output << " ";
+				bool pixel = (int)this->screenBuffer[x + (y * 64)];
+				if (pixel)
+				{
+					Output << (char)219;
+				}
+				else
+				{
+					Output << " ";
+				}
 			}
 		}
 		Output << std::endl;
@@ -532,4 +541,9 @@ void Chip8::OutputScreen()
 	std::cout << Output.str();
 
 	this->drawFlag = false;
+}
+
+void Chip8::Buzzer()
+{
+	MessageBeep(0xFFFFFFFF);
 }

@@ -40,14 +40,14 @@ private:
 	unsigned short pc{ 0x200 };
 
 	unsigned char screenBuffer[64 * 32]{ 0x0000 };
-	unsigned char delayTimer;
-	unsigned int delayTickTimer;
-	unsigned char soundTimer;
+	unsigned char delayTimer{ 0 };
+	time_t delayTickTimer{ 0 };
+	unsigned char soundTimer{ 0 };
 
 	unsigned short stack[16]{ 0x0200 };
 	unsigned short sp{ 0 };
 
-	float deltaTime{ 0 };
+	time_t deltaTime{ 0 };
 
 	char KeyMap[16]{
 		'1', '2', '3', '4',
@@ -56,6 +56,8 @@ private:
 		'z', 'x', 'c', 'v'
 	};
 	
+
+	void Buzzer();
 
 public:
 	// Debug
@@ -67,7 +69,6 @@ public:
 	bool StepExecute{ false };
 
 	int ScreenMagnifierX{ 2 };
-	int ScreenMagnifierY{ 2 };
 
 	bool executing{ true };
 
@@ -81,5 +82,6 @@ public:
 	void LoadGame(std::string File);
 	void EmulateCycle();
 	void OutputScreen();
+
 };
 
