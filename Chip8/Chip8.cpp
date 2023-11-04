@@ -511,6 +511,12 @@ void Chip8::EmulateCycle()
 	{
 		this->delayTimer != 0 ? this->delayTimer -= 1 : NULL;
 		this->soundTimer != 0 ? this->soundTimer -= 1  : NULL;
+
+		if (this->soundTimer > 0)
+		{
+			Buzzer();
+		}
+
 		this->delayTickTimer = 0;
 	}
 }
@@ -545,5 +551,5 @@ void Chip8::OutputScreen()
 
 void Chip8::Buzzer()
 {
-	MessageBeep(0xFFFFFFFF);
+	
 }
