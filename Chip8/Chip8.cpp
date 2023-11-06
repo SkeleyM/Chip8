@@ -6,42 +6,6 @@
 #include <Windows.h>
 #include <chrono>
 
-void Chip8::DebugLog()
-{
-	int index = 0;
-	for (char value : v)
-	{
-		std::cout << " V" << index << ": " << (int)value;
-		index++;
-	}
-	std::cout << " I:";
-	printf("%X", this->I);
-
-	std::cout << std::endl;
-}
-
-void Chip8::DebugLog(std::string str)
-{
-	if (this->Debugging)
-	{
-		std::cout << str << std::endl;
-	}
-}
-
-void Chip8::OutputKeyStates()
-{
-	if (!this->Debugging) { return; }
-
-	int index = 0;
-	for (char Key : key)
-	{
-		std::cout << "K" << index << ": " << Key << " ";
-		index++;
-	}
-	std::cout << std::endl;
-}
-
-
 // just no?? what was i on making this
 char Chip8::WaitForKey()
 {
