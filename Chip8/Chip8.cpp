@@ -41,6 +41,8 @@ void Chip8::OutputKeyStates()
 	std::cout << std::endl;
 }
 
+
+// just no?? what was i on making this
 char Chip8::WaitForKey()
 {
 	while (1)
@@ -58,16 +60,19 @@ char Chip8::WaitForKey()
 
 void Chip8::SetKeys()
 {
-	// i do not care this is bad
 
 	for (int i=0; i < 16; i++)
 	{
-		int KeyVK = VkKeyScanA(this->KeyMap[i]);
-		if (GetKeyState(KeyVK) < 0) { this->key[i] = true; }
-		else { this->key[i] = false; }
+		// the upper bit represents the key press state
+		if (GetKeyState(this->KeyMap[i]) & 0x8000) 
+		{ 
+			this->key[i] = true; 
+		}
+		else 
+		{ 
+			this->key[i] = false; 
+		}
 	}
-	
-	
 }
 
 void Chip8::InitialiseCpu()
@@ -385,13 +390,13 @@ void Chip8::EmulateCycle()
 		{
 			case (0x000E):
 			{
-				if (key[x]) { this->pc += 4; }
+				if (key[x - 2]) { this->pc += 4; }
 				else { this->pc += 2; }
 				break;
 			}
 			case (0x0001):
 			{
-				if (!key[x]) { this->pc += 4; }
+				if (!key[x - 2]) { this->pc += 4; }
 				else { this->pc += 2; }
 				break;
 			}
@@ -406,7 +411,6 @@ void Chip8::EmulateCycle()
 		case(0x0000):
 		{
 			this->executing = false;
-			std::cout << "Returning to 'CHIP-OS'";
 			break;
 		}
 		// LOD Vx, DT
