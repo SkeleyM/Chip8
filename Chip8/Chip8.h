@@ -55,31 +55,7 @@ private:
 		0x41, 0x53, 0x44, 0x46,
 		0x5A, 0x58, 0x43, 0x56
 	};
-	
 
-	void Buzzer();
-
-public:
-	// Debug
-	void DebugLog(std::string str);
-	void DebugLog();
-	void OutputKeyStates();
-
-	bool Debugging{ false };
-	bool StepExecute{ false };
-
-	int ScreenMagnifierX{ 2 };
-
-	bool executing{ true };
-
-	bool drawFlag;
-	// Input
-	char WaitForKey();
-	void SetKeys();
-
-	// Emulation
-	void InitialiseCpu();
-	void LoadGame(std::string File);
 	void OP_00E0();
 	void OP_00EE();
 	void OP_1000(int nnn);
@@ -116,6 +92,31 @@ public:
 	void OP_F033(int x);
 	void OP_F055();
 	void OP_F065();
+
+	void Buzzer();
+
+public:
+	// Debug
+	void DebugLog(std::string str);
+	void DebugLog();
+	void OutputKeyStates();
+
+	bool Debugging{ false };
+	bool StepExecute{ false };
+
+	int ScreenMagnifierX{ 2 };
+
+	bool executing{ true };
+
+	bool drawFlag;
+	// Input
+	char WaitForKey();
+	void SetKeys();
+
+	// Emulation
+	void InitialiseCpu();
+	void LoadGame(std::string File);
+
 
 	void EmulateCycle();
 	void OutputScreen();
