@@ -80,8 +80,48 @@ public:
 	// Emulation
 	void InitialiseCpu();
 	void LoadGame(std::string File);
+	void OP_00E0();
+	void OP_00EE();
+	void OP_1000(int nnn);
+	void OP_2000(int nnn);
+	void OP_3000(int x, int kk);
+	void OP_4000(int x, int kk);
+	void OP_5000(int x, int y);
+	void OP_6000(int x, int kk);
+	void OP_7000(int x, int kk);
+	void OP_8000(int x, int y);
+	void OP_8001(int x, int y);
+	void OP_8002(int x, int y);
+	void OP_8003(int x, int y);
+	void OP_8004(int x, int y);
+	void OP_8005(int x, int y);
+	void OP_8006(int x);
+	void OP_8007(int y, int x);
+	void OP_800E(int x);
+	void OP_9000(int x, int y);
+	void OP_A000(int nnn);
+	void OP_B000(int nnn);
+	void OP_C000(int x, int kk);
+	void OP_D000();
+	void OP_E00E(int x);
+	void OP_E001(int x);
+
+	void OP_F000();
+	void OP_F007(int x);
+	void OP_F00A(int x);
+	void OP_F015(int x);
+	void OP_F018(int x);
+	void OP_F01E(int x);
+	void OP_F029(int x);
+	void OP_F033(int x);
+	void OP_F055();
+	void OP_F065();
+
 	void EmulateCycle();
 	void OutputScreen();
 
 };
 
+void OP_00EE();
+
+void OP_D000();
